@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset = "UTF-8">
+      <title>Test Electron</title>
+      <link rel="stylesheet" href="dep/slick/slick.css">
+      <link rel="stylesheet" href="dep/noty/noty.css">
+      <link rel="stylesheet" href="dep/noty/themes/metroui.css">
+      <link rel="stylesheet" href="dep/bootstrap/css/bootstrap.min.css">
+      <link rel="stylesheet" href="dep/iziModal-master/css/iziModal.css">
+      <link rel="stylesheet" href="dep/w3.css">
+      <style>
+         /*
+         .titlebar {
+            border-bottom:1px solid rgb(240, 240, 240);
+         }
+         */
+         html {
+            border-radius: 10px;
+            min-width: 1000px;
+            min-height: 500px;
+         }
+         body {
+            background-color:#222;
+            color: white;
+         }
+         #mainContent {
+            overflow:auto;
+            height:100%;
+            width:100vw;
+            margin-top:30px;
+         }
+         .titlebar {
+            position:fixed!important;
+         }
+         .card {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            width: 20%;
+            max-height: 10%;
+            background-color:black;
+            margin: auto;
+            text-align: center;
+            font-family: arial;
+          }
+          
+          .price {
+            color: grey;
+            font-size: 15px;
+          }
+          
+          .card button {
+            border: none;
+            outline: 0;
+            padding: 12px;
+            color: white;
+            background-color: #050505;
+            text-align: center;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+          }
+          .card button:hover {
+            opacity: 0.7;
+          }
+          .card button[disabled]:hover {
+            opacity: 1;
+            cursor:not-allowed;
+          }
+         ::-webkit-scrollbar {
+            width: 10px;
+            z-index: 99;
+            margin-top:30px;
+            margin-right:10px;
+            background-color: #191919;
+         }
+         ::-webkit-scrollbar-track {
+            background: #222;
+            margin-top:30px;
+            margin-right:10px;
+         }
+ 
+         ::-webkit-scrollbar-thumb {
+           background: #888;
+           border-radius:5px;
+           margin-right:10px;
+         }
+ 
+         ::-webkit-scrollbar-thumb:hover {
+           background: #555;
+         } 
+         .gameTitle img {
+            height:96vh;
+         }
+         .gameTitle h1 {
+            text-align:center;
+            margin:auto;
+            width:100%;
+            top:10vh;
+            font-size:10vw;
+            position: absolute;
+         }
+         .gameTitle button {
+            text-align:center;
+            margin:auto;
+            top:20vh;
+            position: absolute;
+         }
+         .gameTitle button[disabled] {
+            text-align:center;
+            margin:auto;
+            left:50vh;
+            right:50vh;
+            top:30vh;
+            position: absolute;
+            opacity: 1!important;
+            background-color:black!important;
+         }
+         #sideMenu {
+            background-color: #191919;
+            float:left;
+            width:45px;
+            height:100vh;
+            padding-top:30px!important;
+            z-index: 99;
+            position:fixed;
+         }
+         #logoButton {
+            width:45px;
+            height:45px;
+            text-align:center;
+            background-color: #191919;
+            color: white;
+            border: none;
+            z-index: 99;
+            position:fixed;
+         }
+         .container-after-titlebar {
+            z-index:1;
+         }
+         #logoButton:hover {
+            width:45px;
+            height:45px;
+            text-align:center;
+            background-color: #222;
+            color: white;
+            border: none;
+         }
+         #content {
+            width:100%;
+            height:100%;
+            position: absolute;
+            margin-top:30px;
+            margin-left:45px;
+         }
+         input[type=text], input[type=password]{
+            background-color: #222;
+            color:white;
+            text-align: center;
+            border: 1px solid #888!important;
+            border-radius: 3px;
+         }
+         input[type=text], input[type=password]:focus{
+            border: 1px solid orangered;
+         }
+         input[type=submit]{
+            border: 1px solid #888;
+            border-radius: 3px;
+            background-color:turquoise;
+            color: black;
+            width:90%;
+         }
+         #loginForm {
+            width:25%;
+            margin-left:32.5%;
+            margin-right:32.5%;
+         }
+      </style>
+   </head>
+   <body>
+         <script>
+               const electron = require('electron');
+               const customTitlebar = require('custom-electron-titlebar');
+               const mmenu = new electron.remote.Menu();
+               /*
+               mmenu.append(new electron.remote.MenuItem({
+                  label: 'Account',
+                  submenu: [
+                     {
+                        label: 'About',
+                        click: () => console.log('Click on subitem 1')
+                     }
+                     {
+                        type: 'separator'Double Edge Studios
+                     }
+                  ]
+               }));
+               */
+               window.titlebr = new customTitlebar.Titlebar({
+                   backgroundColor: customTitlebar.Color.fromHex('#191919'),
+                   drag: true,
+                   menu:mmenu
+               });
+         </script>
+         <div id="sideMenu">
+            <button id="logoButton" class="">
+               Logo
+            </button>
+         </div>
+         <div id="content">
+            <form id="loginForm" class="w3-center">
+               <br>
+               <h1>Login</h1>
+               <br><br>
+               <label class="w3-left">Username: </label><br>
+               <input type="text" id="username" placeholder="username"><br><br>
+               <label class="w3-left">Password: </label><br>
+               <input type="password" id="password" placeholder="password"><br><br>
+               <input type="submit" value="Login">
+            </form>
+         </div>
+      <script>
+         if (typeof module === 'object') {
+            window.module = module;
+            module = undefined;
+         }
+      </script>
+      <script src="dep/jquery-3.4.1.min.js"></script>
+      <script src="dep/noty/noty.js"></script>
+      <script src="dep/slick/slick.js"></script>
+      <script src="dep/iziModal-master/js/iziModal.min.js"></script>
+      <script src="dep/bootstrap/js/bootstrap.js"></script>
+      <script>
+         const loggedInMenu = new electron.remote.Menu();
+         const loggedOutMenu = new electron.remote.Menu();
+         loggedInMenu.append(new electron.remote.MenuItem({
+            label:"DES  ",
+            submenu: [
+            {
+               label:"account",
+               submenu: [
+                  {
+                     label:"View on website",
+                     click: function()
+                     {
+                        location.href = `http://doubleedgestudios.000webhostapp.com/users/user.php?uname=${localStorage["username"]}&psswd=${localStorage["password"]}`
+                     }
+                  },
+                  {
+                     type:"separator"
+                  },
+                  {
+                     label: "logout",
+                     click: function()
+                     {
+                        localStorage["username"] = "";
+                        localStorage["password"] = "";
+                        localStorage["loggedIn"] = false;
+                        location.reload();
+                     }
+                  }
+               ]
+            }
+            ]
+         }));
+         
+         if(window.module) module = window.module;
+         $(".container-after-titlebar").hide();
+         if (localStorage["loggedIn"] == "true") {
+            $("#loginForm").hide()
+            $(".loggedin").show()
+            window.titlebr.updateMenu(loggedInMenu);
+         } else {
+            $("#loginForm").show()
+            $(".loggedin").hide()
+            window.titlebr.updateMenu(loggedOutMenu);
+         }
+         $("#loginForm").submit(function(evt){
+            evt.preventDefault()
+            var username = $("#username").val();
+            var password = $("#password").val()
+            if(username == "admin" && password == "gamesauce12"){
+               localStorage["username"] = username;
+               localStorage["password"] = password;
+               localStorage["loggedIn"] = true;
+               $("#loginForm").hide()
+               $(".loggedin").show()
+               window.titlebr.updateMenu(loggedInMenu);
+            }
+         });
+      </script>
+
+   </body>
+</html>
