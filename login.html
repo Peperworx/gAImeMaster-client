@@ -128,7 +128,7 @@
         });
 
         if (localStorage.getItem("loggedin") == "true") {
-            $.get("http://localhost/users/checkUsers.py", {
+            $.get("http://hal/users/checkUsers.py", {
                 username: localStorage.getItem("username"),
                 password: localStorage.getItem("password")
             }, function(data) {
@@ -146,7 +146,7 @@
 
         $("#submit").click(function(e) {
             e.preventDefault();
-            $.get("http://localhost/users/checkUsers.py", {
+            $.get("http://hal/users/checkUsers.py", {
                 username: $("#email").val(),
                 password: $("#password").val()
             }, function(data) {

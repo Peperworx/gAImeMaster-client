@@ -93,7 +93,7 @@
         $("a").click(function(e) {
             window.titlebr.dispose();
         });
-        var socket = io("http://localhost:3435")
+        var socket = io("http://hal:3435")
         socket.emit("checkIn", localStorage.getItem("username"))
         socket.on("invitedToParty", function(data) {
             var notification = new Notification(`You have been invited to join a party by ${data["OwnerUNAME"]}. Click on this notification to accept.`);
