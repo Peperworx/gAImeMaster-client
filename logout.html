@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>gAImeMaster Client</title>
+    <link rel="stylesheet" href="dep/slick/slick.css">
+    <link rel="stylesheet" href="dep/noty/noty.css">
+    <link rel="stylesheet" href="dep/noty/themes/metroui.css">
+    <link rel="stylesheet" href="dep/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="dep/iziModal-master/css/iziModal.css">
+    <link rel="stylesheet" href="dep/w3.css">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="login.css">
+
+
+</head>
+
+<body>
+    <script>
+        const developer = true;
+        const electron = require('electron');
+        const customTitlebar = require('custom-electron-titlebar');
+        const mmenu = new electron.remote.Menu();
+
+        mmenu.append(new electron.remote.MenuItem({
+            label: 'Account',
+            submenu: [{
+                label: "Logout",
+                click: function() {
+                    location.href = "logout.html";
+                }
+            }]
+        }));
+        if (localStorage.getItem("developer") == "true") {
+            mmenu.append(new electron.remote.MenuItem({
+                label: 'Developer',
+                submenu: [{
+                    label: "Reload Page",
+                    click: function() {
+                        location.reload();
+                    }
+                }]
+            }));
+        }
+        window.titlebr = new customTitlebar.Titlebar({
+            backgroundColor: customTitlebar.Color.fromHex('#222'),
+            drag: true,
+            menu: mmenu,
+            maximizable: false
+        });
+    </script>
+    <div class="container">
+
+    </div>
+
+    <script>
+    </script>
+
+    <script>
+        if (typeof module === 'object') {
+            window.module = module;
+            module = undefined;
+        }
+    </script>
+    <script src="dep/jquery.js"></script>
+    <script src="dep/noty/noty.js"></script>
+    <script src="dep/slick/slick.js"></script>
+    <script src="dep/iziModal-master/js/iziModal.min.js"></script>
+    <script src="dep/bootstrap/js/bootstrap.js"></script>
+    <script>
+        if (window.module) {
+            module = window.module;
+        }
+    </script>
+    <script>
+        $("a").click(function(e) {
+            window.titlebr.dispose();
+        });
+    </script>
+    <script>
+        localStorage.setItem("loggedin", false);
+        location.href = "login.html";
+    </script>
+
+</body>
+
+</html>

@@ -9,7 +9,7 @@
   "author": "Riley Wilton",
   "license": "ISC",
   "dependencies": {
-    "custom-electron-titlebar": "^3.0.10",
+    "custom-electron-titlebar": "^3.1.0",
     "electron-prebuilt": "^1.4.13"
   }
 }

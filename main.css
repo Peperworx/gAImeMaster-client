@@ -1,0 +1,68 @@
+/*
+         .titlebar {
+            border-bottom:1px solid rgb(240, 240, 240);
+         }
+         */
+
+
+/* Add padding on top of bootstrap container to compensate for navbar */
+
+.container {
+    padding-top: 30px;
+}
+
+html {
+    border-radius: 10px;
+    min-width: 1000px;
+    min-height: 500px;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background-color: #222;
+    color: white;
+    width: 100%;
+    height: 100%;
+}
+
+.card {
+    background-color: #222;
+    color: white;
+    border: 0px;
+    width: 200px !important;
+    text-align: center;
+    height: 250px;
+    border: 1px solid #202020;
+    margin: 10px;
+    box-shadow: 3px 3px rgba(48, 48, 48, 0.2);
+}
+
+.card a {
+    margin-top: auto;
+    margin-bottom: 0px;
+}
+
+.card hr {
+    color: #202020;
+    border: 1px solid #202020;
+    margin-top: 20px;
+    margin-bottom: 70px;
+}
+
+.hover-dark:hover {
+    background-color: #303030 !important;
+    color: white !important;
+    width: 100%;
+}
+
+@media only screen and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2) {
+    .floating-label {
+        width: 90vw;
+        margin-right: 5vw;
+    }
+    .log-in {
+        width: 100%;
+    }
+    .loginbtn {}
+}

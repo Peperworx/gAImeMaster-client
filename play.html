@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>gAImeMaster Client</title>
+    <link rel="stylesheet" href="dep/slick/slick.css">
+    <link rel="stylesheet" href="dep/noty/noty.css">
+    <link rel="stylesheet" href="dep/noty/themes/metroui.css">
+    <link rel="stylesheet" href="dep/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="dep/iziModal-master/css/iziModal.css">
+    <link rel="stylesheet" href="dep/w3.css">
+    <link rel="stylesheet" href="main.css">
+    <style>
+        .select-container {
+            position: relative;
+            background-color: #222;
+            color: #fff;
+            display: inline;
+            padding: 7px;
+        }
+        
+        .select-container select {
+            background-color: #222;
+            color: #fff;
+            outline: none;
+            border: none;
+            border-bottom: 1px solid #303030;
+            min-height: 50px;
+            min-width: 300px;
+        }
+        
+        .select-container select * {
+            background-color: #222;
+            color: #fff;
+            outline: none;
+        }
+        
+        #step1 {
+            margin-top: 7px;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        const developer = true;
+        const electron = require('electron');
+        const customTitlebar = require('custom-electron-titlebar');
+        const mmenu = new electron.remote.Menu();
+        mmenu.append(new electron.remote.MenuItem({
+            label: 'Account',
+            submenu: [{
+                label: "Logout",
+                click: function() {
+                    location.href = "logout.html";
+                }
+            }]
+        }));
+        if (localStorage.getItem("developer") == "true") {
+            mmenu.append(new electron.remote.MenuItem({
+                label: 'Developer',
+                submenu: [{
+                    label: "Reload Page",
+                    click: function() {
+                        location.reload();
+                    }
+                }]
+            }));
+        }
+        window.titlebr = new customTitlebar.Titlebar({
+            backgroundColor: customTitlebar.Color.fromHex('#222'),
+            drag: true,
+            menu: mmenu,
+            maximizable: false
+        });
+    </script>
+    <div class="container">
+
+        <div class="row" id="step1">
+            <div class="col-lg-5 col-style-1 w3-center">
+                <h3>Step 1: Select Adventure</h3>
+                <br>
+                <div class="select-container" id="adventureSelectContainer">
+                    Select Adventure:
+                    <select class="selecter" id="adventureSelect">
+                        <option>Test</option>
+                        <option>Test 2</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        if (typeof module === 'object') {
+            window.module = module;
+            module = undefined;
+        }
+    </script>
+    <script src="dep/jquery.js"></script>
+    <script src="dep/noty/noty.js"></script>
+    <script src="dep/slick/slick.js"></script>
+    <script src="dep/iziModal-master/js/iziModal.min.js"></script>
+    <script src="dep/bootstrap/js/bootstrap.js"></script>
+    <script>
+        if (window.module) {
+            module = window.module;
+        }
+    </script>
+    <script>
+        $("a").click(function(e) {
+            window.titlebr.dispose();
+        });
+    </script>
+
+    <script>
+    </script>
+
+</body>
+
+</html>
