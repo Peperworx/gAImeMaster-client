@@ -1,0 +1,2 @@
+C:\Users\Riley\Desktop\gaimemaster\gAImeMaster-electron\obj\Debug\gAImeMaster-electron.njsprojAssemblyReference.cache
+C:\Users\Riley\Desktop\gaimemaster\gAImeMaster-electron\bin\Microsoft.NodejsTools.WebRole.dll

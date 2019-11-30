@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
     <meta charset="UTF-8">
-    <title>gAImeMaster Client</title>
+    <title id="title">gAImeMaster Client</title>
     <link rel="stylesheet" href="dep/slick/slick.css">
     <link rel="stylesheet" href="dep/noty/noty.css">
     <link rel="stylesheet" href="dep/noty/themes/metroui.css">
@@ -17,39 +17,107 @@
 </head>
 
 <body>
-    <script>
-        const developer = true;
-        const electron = require('electron');
-        const customTitlebar = require('custom-electron-titlebar');
-        const mmenu = new electron.remote.Menu();
-
-        mmenu.append(new electron.remote.MenuItem({
-            label: 'Account',
-            submenu: [{
-                label: "Logout",
-                click: function() {
-                    location.href = "logout.html";
-                }
-            }]
-        }));
-        if (localStorage.getItem("developer") == "true") {
-            mmenu.append(new electron.remote.MenuItem({
-                label: 'Developer',
-                submenu: [{
-                    label: "Reload Page",
-                    click: function() {
-                        location.reload();
-                    }
-                }]
-            }));
+    <style>
+        #topBar {
+            height: 29px;
+            /*border:3px solid black;*/
+            margin: 0px;
+            background-color: #222;
         }
-        window.titlebr = new customTitlebar.Titlebar({
-            backgroundColor: customTitlebar.Color.fromHex('#222'),
-            drag: true,
-            menu: mmenu,
-            maximizable: false
-        });
+        
+        #handle {
+            -webkit-app-region: drag;
+            width: calc(100% - 174px);
+            height: 29px;
+            position: absolute;
+            z-index: 998;
+        }
+        
+        .header-button {
+            height: 29px;
+            width: 58px;
+            background-color: white;
+            color: black;
+            border-radius: 0%;
+            border: none;
+            outline: none;
+            float: right;
+            font-size: 12pt
+        }
+        
+        #MM {
+            background-image: url("maximize.svg");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: #222;
+        }
+        
+        #MM:hover {
+            background-color: #333;
+            color: white;
+        }
+        
+        #MINM {
+            background-image: url("minimize.svg");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: #222;
+        }
+        
+        #MINM:hover {
+            background-color: #333;
+            color: white;
+        }
+        
+        #X {
+            /*background-color: #222;*/
+            background-image: url("close.svg");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: #222;
+        }
+        
+        #X:hover {
+            color: white;
+            background-color: red;
+        }
+        
+        #titleBar {
+            color: white;
+            text-align: center;
+            width: 100%;
+            margin: auto;
+            font-family: Verdana, sans-serif;
+            font-size: 12px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+            margin-bottom: auto;
+            line-height: 29px;
+        }
+    </style>
+    <header id="topBar">
+        <div id="handle">
+            <div id="titleBar"></div>
+        </div>
+        <div class="header-buttons">
+            <button id="X" class="header-button" onclick="quit()"></button>
+            <button id="MINM" class="header-button" onclick="minimize()"></button>
+        </div>
+    </header>
+    <script>
+        const ipc = require('electron').ipcRenderer;
+
+        function quit() {
+            ipc.send("close");
+        }
+
+        function minimize() {
+            ipc.send("minimize");
+        }
+        document.getElementById("titleBar").innerHTML = document.getElementById("title").innerHTML;
     </script>
+
     <div class="container">
         <form action="" class="log-in loginform w3-center" style="display:none;" id="login" autocomplete="off">
             <h2>Login:</h2>
@@ -123,10 +191,6 @@
         }
     </script>
     <script>
-        $("a").click(function(e) {
-            window.titlebr.dispose();
-        });
-
         if (localStorage.getItem("loggedin") == "true") {
             $.get("http://hal/users/checkUsers.py", {
                 username: localStorage.getItem("username"),
