@@ -54,12 +54,38 @@
             font-size: 20px;
             font-weight: 500;
             padding: 10px;
-            display: table-cell;
+            display: block;
             padding-left: 75px;
             padding-right: 75px;
         }
 
         #inviteList li:hover {
+            background-color: #333;
+        }
+
+        #adventureList {
+            width: calc(100vw - 300px);
+            word-wrap: normal;
+            display: inline;
+        }
+
+        #adventureList li {
+            background-color: #222;
+            border: none;
+            outline: none;
+            height: auto;
+            width: 400px;
+            color: white;
+            font-size: 20px;
+            font-weight: 500;
+            padding: 10px;
+            display: block;
+            padding-left: 75px;
+            padding-right: 75px;
+
+        }
+
+        #adventureList li:hover {
             background-color: #333;
         }
     </style>
@@ -158,6 +184,21 @@
         #back:hover {
             background-color: #333;
         }
+
+        #forward {
+            background-color: #222;
+            color: white;
+            outline: none;
+            padding: 5px;
+            padding-left: 20px;
+            padding-right: 20px;
+            border: none;
+            float: right;
+        }
+
+        #forward:hover {
+            background-color: #333;
+        }
     </style>
     <header id="topBar">
         <div id="handle">
@@ -182,12 +223,28 @@
     </script>
     <div class="container">
         <button id="back" onclick="stepBack()">◀</button>
+        <button id="forward" onclick="stepForward()">▶</button>
         <div class="row step" id="step1">
             <div class="col-lg-5 col-style-1 w3-center">
                 <h3>Step 1: Invite Players</h3>
                 <br>
                 <ul id="inviteList">
                 </ul>
+            </div>
+
+        </div>
+        <div class="row step" id="step2">
+            <div class="col-lg-5 col-style-1 w3-center">
+                <h3>Step 2: Select Adventure</h3>
+                <br>
+                <ul id="adventureList">
+                    <li data-adventure-id="-1" data-solo="true" onclick="selectAdventure(-1)">Shop</li>
+                    <li data-adventure-id="0" data-solo="true" onclick="selectAdventure(0)">Your first adventure. (Solo)
+                    </li>
+                    <li data-adventure-id="1" data-solo="false" onclick="selectAdventure(1)">Falken's Maze.</li>
+                    <li data-adventure-id="2" data-solo="false" onclick="selectAdventure(2)">Wanted: Bargle</li>
+                </ul>
+
             </div>
 
         </div>
@@ -216,7 +273,8 @@
 
     <script>
 
-
+        // Default Adventure ID
+        var advId = -1
 
         // Initialize id variable
         var id = ""
@@ -270,6 +328,11 @@
             }
         }
 
+        // Function to go forward a step:
+        function stepForward() {
+            step++;
+        }
+
         // Set Interval
         setInterval(function () {
             // Set step to the step in variable
@@ -283,6 +346,13 @@
             mainSock.emit('invitingToParty', '["' + invname + '","' + localStorage.getItem("username") + '"]');
             console.log("invitingtoparty")
             var notification = new Notification(`You have invited ${invname} to your party`);
+        }
+
+
+
+        function selectAdventure(id) {
+            advId = id;
+            step++;
         }
 
     </script>
