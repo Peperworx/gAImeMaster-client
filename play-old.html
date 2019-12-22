@@ -1,0 +1,387 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title id="title">gAImeMaster Client</title>
+    <link rel="stylesheet" href="dep/slick/slick.css">
+    <link rel="stylesheet" href="dep/noty/noty.css">
+    <link rel="stylesheet" href="dep/noty/themes/metroui.css">
+    <link rel="stylesheet" href="dep/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="dep/iziModal-master/css/iziModal.css">
+    <link rel="stylesheet" href="dep/w3.css">
+    <link rel="stylesheet" href="main.css">
+    <style>
+        button:focus {
+            outline: none !important;
+        }
+
+        .select-container {
+            position: relative;
+            background-color: #222;
+            color: #fff;
+            display: inline;
+            padding: 7px;
+        }
+
+        .select-container select {
+            background-color: #222;
+            color: #fff;
+            outline: none;
+            border: none;
+            border-bottom: 1px solid #303030;
+            min-height: 50px;
+            min-width: 300px;
+        }
+
+        .select-container select * {
+            background-color: #222;
+            color: #fff;
+            outline: none;
+        }
+
+        #step1 {
+            margin-top: 7px;
+        }
+
+        #inviteList {
+            list-style: none;
+        }
+
+        #inviteList li {
+            background-color: #222;
+            border: none;
+            outline: none;
+            min-height: 48px;
+            min-width: 400px;
+            color: white;
+            font-size: 20px;
+            font-weight: 500;
+            padding: 10px;
+            display: block;
+            padding-left: 75px;
+            padding-right: 75px;
+        }
+
+        #inviteList li:hover {
+            background-color: #333;
+        }
+
+        #adventureList {
+            width: calc(100vw - 300px);
+            word-wrap: normal;
+            display: inline;
+        }
+
+        #adventureList li {
+            background-color: #222;
+            border: none;
+            outline: none;
+            height: auto;
+            width: 400px;
+            color: white;
+            font-size: 20px;
+            font-weight: 500;
+            padding: 10px;
+            display: block;
+            padding-left: 75px;
+            padding-right: 75px;
+
+        }
+
+        #adventureList li:hover {
+            background-color: #333;
+        }
+    </style>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <style>
+        #topBar {
+            height: 29px;
+            /*border:3px solid black;*/
+            margin: 0px;
+            background-color: #222;
+        }
+
+        #handle {
+            -webkit-app-region: drag;
+            width: calc(100% - 174px);
+            height: 29px;
+            position: absolute;
+            z-index: 998;
+        }
+
+        .header-button {
+            height: 29px;
+            width: 58px;
+            background-color: white;
+            color: black;
+            border-radius: 0%;
+            border: none;
+            outline: none;
+            float: right;
+            font-size: 12pt
+        }
+
+
+        #MM {
+            background-image: url("maximize.svg");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: #222;
+        }
+
+        #MM:hover {
+            background-color: #333;
+            color: white;
+        }
+
+        #MINM {
+            background-image: url("minimize.svg");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: #222;
+        }
+
+        #MINM:hover {
+            background-color: #333;
+            color: white;
+        }
+
+        #X {
+            /*background-color: #222;*/
+            background-image: url("close.svg");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: #222;
+        }
+
+        #X:hover {
+            color: white;
+            background-color: red;
+        }
+
+        #titleBar {
+            color: white;
+            text-align: center;
+            width: 100%;
+            margin: auto;
+            font-family: Verdana, sans-serif;
+            font-size: 12px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+            margin-bottom: auto;
+            line-height: 29px;
+        }
+
+        #back {
+            background-color: #222;
+            color: white;
+            outline: none;
+            padding: 5px;
+            padding-left: 20px;
+            padding-right: 20px;
+            border: none;
+        }
+
+        #back:hover {
+            background-color: #333;
+        }
+
+        #forward {
+            background-color: #222;
+            color: white;
+            outline: none;
+            padding: 5px;
+            padding-left: 20px;
+            padding-right: 20px;
+            border: none;
+            float: right;
+        }
+
+        #forward:hover {
+            background-color: #333;
+        }
+    </style>
+    <header id="topBar">
+        <div id="handle">
+            <div id="titleBar"></div>
+        </div>
+        <div class="header-buttons">
+            <button id="X" class="header-button" onclick="quit()"></button>
+            <button id="MINM" class="header-button" onclick="minimize()"></button>
+        </div>
+    </header>
+    <script>
+        const ipc = require('electron').ipcRenderer;
+
+        function quit() {
+            ipc.send("close");
+        }
+
+        function minimize() {
+            ipc.send("minimize");
+        }
+        document.getElementById("titleBar").innerHTML = document.getElementById("title").innerHTML;
+    </script>
+    <div class="container">
+        <button id="back" onclick="stepBack()">◀</button>
+        <button id="forward" onclick="stepForward()">▶</button>
+        <div class="row step" id="step1">
+            <div class="col-lg-5 col-style-1 w3-center">
+                <h3>Step 1: Invite Players</h3>
+                <br>
+                <ul id="inviteList">
+                </ul>
+            </div>
+
+        </div>
+        <div class="row step" id="step2">
+            <div class="col-lg-5 col-style-1 w3-center">
+                <h3>Step 2: Vote For Caller</h3>
+                <br>
+                <ul id="voteList">
+
+                </ul>
+
+            </div>
+
+        </div>
+        <div class="row step" id="step3">
+            <div class="col-lg-5 col-style-1 w3-center">
+                <h3>Step 3: Select Adventure</h3>
+                <br>
+                <ul id="adventureList">
+                    <li data-adventure-id="-1" data-solo="true" onclick="selectAdventure(-1)">Shop</li>
+                    <li data-adventure-id="0" data-solo="true" onclick="selectAdventure(0)">Your first adventure. (Solo)
+                    </li>
+                    <li data-adventure-id="1" data-solo="false" onclick="selectAdventure(1)">Falken's Maze.</li>
+                    <li data-adventure-id="2" data-solo="false" onclick="selectAdventure(2)">Wanted: Bargle</li>
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        if (typeof module === 'object') {
+            window.module = module;
+            module = undefined;
+        }
+    </script>
+    <script src="dep/jquery.js"></script>
+    <script src="dep/noty/noty.js"></script>
+    <script src="dep/slick/slick.js"></script>
+    <script src="dep/iziModal-master/js/iziModal.min.js"></script>
+    <script src="dep/bootstrap/js/bootstrap.js"></script>
+    <script src="dep/cookie.js"></script>
+    <script src="dep/socket.io.js"></script>
+    <script>
+        if (window.module) {
+            module = window.module;
+        }
+    </script>
+    <script>
+    </script>
+
+    <script>
+
+        // Default Adventure ID
+        var advId = -1
+
+        // Initialize id variable
+        var id = ""
+
+        // Define Main Server Host
+        var host = "localhost"
+
+        // Connect to main socket
+        var mainSock = io("http://" + host + ":3435")
+        mainSock.emit("checkIn", localStorage.getItem("username"))
+
+        // Initiate friends as an array
+        var friends = []
+
+        // Ask Server for list of friends
+        $.get(`http://${host}/users/getFriends.py?username=${localStorage.getItem("username")}`, (data) => {
+
+            // JSON parse data
+            data = JSON.parse(data);
+
+            // Set friends to data
+            friends = data;
+
+            // Loop through data (array)
+            for (i = 0; i < data.length; i++) {
+
+                // Append friends to list
+                $("#inviteList").append(`<li onclick="invite('${data[i][1]}')">${data[i][1]}</li>`);
+            }
+
+        });
+        // Get party id:
+        mainSock.emit("needId");
+        mainSock.on("hereIsID", function (data) {
+            id = data["id"]
+        });
+
+        // Set party creation step to 1
+        var step = 1;
+
+        // Function to go back a step:
+        function stepBack() {
+            switch (step) {
+                case 0:
+                case 1:
+                    history.back();
+                    break;
+                default:
+                    step--;
+                    break;
+            }
+
+            if (step == 2) {
+
+            }
+        }
+
+        // Function to go forward a step:
+        function stepForward() {
+            step++;
+        }
+
+        // Set Interval
+        setInterval(function () {
+            // Set step to the step in variable
+            $(".step").hide();
+            $(`#step${step}`).show();
+        }, 100);
+
+        // Handle Inviting to party
+        function invite(invname) {
+            // Tell the server that you are inviting someone to party
+            mainSock.emit('invitingToParty', '["' + invname + '","' + localStorage.getItem("username") + '"]');
+            console.log("invitingtoparty")
+            var notification = new Notification(`You have invited ${invname} to your party`);
+        }
+
+
+        // Handle Selecting Adventure
+        function selectAdventure(id) {
+            // Set advId to Adventure ID
+            advId = id;
+
+            // Increment step
+            step++;
+        }
+
+    </script>
+
+</body>
+
+</html>

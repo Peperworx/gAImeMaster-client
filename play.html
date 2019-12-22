@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -10,8 +10,13 @@
     <link rel="stylesheet" href="dep/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="dep/iziModal-master/css/iziModal.css">
     <link rel="stylesheet" href="dep/w3.css">
+    <link rel="stylesheet" href="dep/select/dist/css/select2.min.css">
     <link rel="stylesheet" href="main.css">
     <style>
+        button:focus {
+            outline: none !important;
+        }
+
         .select-container {
             position: relative;
             background-color: #222;
@@ -88,7 +93,21 @@
         #adventureList li:hover {
             background-color: #333;
         }
+
+        .list-group-item.active {
+            background-color: #743725;
+            border: none;
+            outline: none;
+        }
+
+        .list-group-item {
+            border: none;
+            outline: none;
+            background-color: #9b7241;
+
+        }
     </style>
+    <meta charset="utf-8">
 </head>
 
 <body>
@@ -119,6 +138,7 @@
             float: right;
             font-size: 12pt
         }
+
 
         #MM {
             background-image: url("maximize.svg");
@@ -222,34 +242,42 @@
         document.getElementById("titleBar").innerHTML = document.getElementById("title").innerHTML;
     </script>
     <div class="container">
-        <button id="back" onclick="stepBack()">◀</button>
-        <button id="forward" onclick="stepForward()">▶</button>
-        <div class="row step" id="step1">
-            <div class="col-lg-5 col-style-1 w3-center">
-                <h3>Step 1: Invite Players</h3>
+        <div class="row">
+            <div class="col-lg">
+                <ul class="list-group" id="party-list">
+                    <li class="list-group-item active">Name &nbsp;</span>
+                    </li>
+                    <li class="list-group-item ownerOnly"><span
+                            class="unameOwner"></span>&nbsp;&nbsp;<ins>|</ins>&nbsp;&nbsp;<span
+                            class="text-right"><ins>Owner</ins></span></li>
+                </ul>
+                <h3>Invite Players:</h3>
                 <br>
                 <ul id="inviteList">
                 </ul>
             </div>
-
-        </div>
-        <div class="row step" id="step2">
-            <div class="col-lg-5 col-style-1 w3-center">
-                <h3>Step 2: Select Adventure</h3>
-                <br>
-                <ul id="adventureList">
-                    <li data-adventure-id="-1" data-solo="true" onclick="selectAdventure(-1)">Shop</li>
-                    <li data-adventure-id="0" data-solo="true" onclick="selectAdventure(0)">Your first adventure. (Solo)
-                    </li>
-                    <li data-adventure-id="1" data-solo="false" onclick="selectAdventure(1)">Falken's Maze.</li>
-                    <li data-adventure-id="2" data-solo="false" onclick="selectAdventure(2)">Wanted: Bargle</li>
-                </ul>
-
+            <div class="col-sm">
+                Select module:
+                <!-- Need to develop code to automatically populate select -->
+                <select class="w-100 disableNotOwn" id="adventure">
+                    <option value="-1" data-solo="true">Shop</option>
+                    <option value="0" data-solo="true">Your first adventure. (Solo)</option>
+                    <option value="1" data-solo="false">Falken's Maze.</option>
+                    <option value="2" data-solo="false">Wanted: Bargle</option>
+                </select>
+                <br><br>
+                <button class="w3-button w3-blue ownerOnly" id="start">Start</button>
+                <hr>
+                <h3>Select Character:</h3>
+                <div class="funkyradio" id="characterList">
+                </div>
             </div>
-
+        </div>
+        <div id="hiddenForm" style="display:none;">
+            <div class="funkyradio" id="selectFriends">
+            </div>
         </div>
     </div>
-
     <script>
         if (typeof module === 'object') {
             window.module = module;
@@ -263,6 +291,7 @@
     <script src="dep/bootstrap/js/bootstrap.js"></script>
     <script src="dep/cookie.js"></script>
     <script src="dep/socket.io.js"></script>
+    <script src="dep/select/dist/js/select2.min.js"></script>
     <script>
         if (window.module) {
             module = window.module;
@@ -270,90 +299,191 @@
     </script>
     <script>
     </script>
-
     <script>
+        // Define the domain name to use as the root server
+        var domainName = "localhost"
 
-        // Default Adventure ID
-        var advId = -1
+        // Enable select2:
+        $("select").select2();
 
-        // Initialize id variable
-        var id = ""
+        // Hash Code function for string:
+        String.prototype.hashCode = function () {
+            var hash = 0,
+                i, chr;
+            if (this.length === 0) return hash;
+            for (i = 0; i < this.length; i++) {
+                chr = this.charCodeAt(i);
+                hash = ((hash << 5) - hash) + chr;
+                hash |= 0; // Convert to 32bit integer
+            }
+            return hash;
+        };
 
-        // Define Main Server Host
-        var host = "localhost"
 
-        // Connect to main socket
-        var mainSock = io("http://" + host + ":3435")
-        mainSock.emit("checkIn", localStorage.getItem("username"))
+        // Random ID generation function:
+        var ID = function () {
+            // Math.random should be unique because of its seeding algorithm.
+            // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+            // after the decimal.
+            return '_' + Math.random().toString(36).substr(2, 9);
+        };
 
-        // Initiate friends as an array
+        // Function to find get parameter (going to be removed soon)
+        function findGetParameter(parameterName) {
+            var result = null,
+                tmp = [];
+            location.search
+                .substr(1)
+                .split("&")
+                .forEach(function (item) {
+                    tmp = item.split("=");
+                    if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+                });
+            return result;
+        }
+
+
+        // Gets username:
+        var ownerUsername = localStorage.getItem("username");
+
+        // Gets users username and sets .uname elements to it:
+        $(".uname").text(ownerUsername);
+
+        // Connects to socketio server:
+        var socket = io("http://" + domainName + ":3435")
+
+        // Initialize list fo friends
         var friends = []
 
-        // Ask Server for list of friends
-        $.get(`http://${host}/users/getFriends.py?username=${localStorage.getItem("username")}`, (data) => {
-
-            // JSON parse data
+        // Gets friends from server
+        $.get("http://" + domainName + "/users/getFriends.py", {
+            username: ownerUsername
+        }, function (data) {
             data = JSON.parse(data);
-
-            // Set friends to data
             friends = data;
-
-            // Loop through data (array)
-            for (i = 0; i < data.length; i++) {
+            // Populate friends list
+            for (i = 0; i < friends.length; i++) {
 
                 // Append friends to list
-                $("#inviteList").append(`<li onclick="invite('${data[i][1]}')">${data[i][1]}</li>`);
+                $("#inviteList").append(`<li onclick="invite('${friends[i][1]}')">${friends[i][1]}</li>`);
             }
-
-        });
-        // Get party id:
-        mainSock.emit("needId");
-        mainSock.on("hereIsID", function (data) {
-            id = data["id"]
         });
 
-        // Set party creation step to 1
-        var step = 1;
 
-        // Function to go back a step:
-        function stepBack() {
-            switch (step) {
-                case 0:
-                case 1:
-                    history.back();
-                    break;
-                default:
-                    step--;
-                    break;
-            }
+
+
+        // Checks in with server
+        socket.emit("checkIn", Cookies.get("username"));
+
+        // Initializes ID for party
+        var id = "";
+
+        // Sets is owner value to false:
+        var isOwner = false;
+
+        // Check if I am owner, if not, join.
+        if (localStorage.getItem("partyID") != null) {
+            id = localStorage.getItem("partyID");
+            socket.emit("joinParty", [id, ownerUsername]);
+            $(".ownerOnly").hide();
+            $(".disableNotOwn").prop("disabled", true);
+        } else {
+            socket.emit("startingParty", '["' + ownerUsername + '"]');
+            socket.on("hereIsID", function (data) {
+                id = data["id"]
+            });
+            isOwner = true;
         }
 
-        // Function to go forward a step:
-        function stepForward() {
-            step++;
-        }
+        // Sets room to party ID
+        socket.emit("room", id)
 
-        // Set Interval
-        setInterval(function () {
-            // Set step to the step in variable
-            $(".step").hide();
-            $(`#step${step}`).show();
-        }, 100);
-
-        // Handle Inviting to party
+        // Handle inviting to party
         function invite(invname) {
             // Tell the server that you are inviting someone to party
-            mainSock.emit('invitingToParty', '["' + invname + '","' + localStorage.getItem("username") + '"]');
+            socket.emit('invitingToParty', '["' + invname + '","' + localStorage.getItem("username") + '"]');
             console.log("invitingtoparty")
             var notification = new Notification(`You have invited ${invname} to your party`);
         }
 
 
+        socket.on("memberJoiningParty", function (data) {
+            $("#party-list").html('<li class="list-group-item active">Name &nbsp;</span></li>');
+            for (i = 0; i < data[1]["Members"].length; i++) {
+                if (data[1]["Members"][i][1] != data[1]["OwnerSID"]) {
+                    $("#party-list").append('<li class="list-group-item"><span>' + data[1]["Members"][i][0] + '</span>&nbsp;&nbsp;<ins>|</ins>&nbsp;&nbsp;<span class="text-right"><ins>Member</ins></span></li>');
+                } else {
+                    $("#party-list").append('<li class="list-group-item"><span>' + data[1]["Members"][i][0] + '</span>&nbsp;&nbsp;<ins>|</ins>&nbsp;&nbsp;<span class="text-right"><ins>Owner</ins></span></li>');
 
-        function selectAdventure(id) {
-            advId = id;
-            step++;
+                }
+            }
+        });
+        socket.on("joiningParty", function (data) {
+            for (i = 0; i < data[1]["Members"].length; i++) {
+                if (data[1]["Members"][i][1] != data[1]["OwnerSID"]) {
+                    $("#party-list").append('<li class="list-group-item"><span>' + data[1]["Members"][i][0] + '</span>&nbsp;&nbsp;<ins>|</ins>&nbsp;&nbsp;<span class="text-right"><ins>Member</ins></span></li>');
+                } else {
+                    $("#party-list").append('<li class="list-group-item"><span>' + data[1]["Members"][i][0] + '</span>&nbsp;&nbsp;<ins>|</ins>&nbsp;&nbsp;<span class="text-right"><ins>Owner</ins></span></li>');
+                }
+            }
+        });
+        $("#start").click(function () {
+            var characterId = $("input:radio[name ='character']:checked").val();
+            var adventureId = $("#adventure").val();
+            Cookies.set("id", id);
+            Cookies.set("charid", characterId);
+            Cookies.set("advid", adventureId);
+            if ($("#adventure").val() == "-1") {
+                location.href = `http://${domainName}/play/shop.html?${characterId}`
+            } else if ($(this).val("data-solo") == "true") {
+                location.href = `http://${domainName}/play/party/game?id=${id}&charid=${characterId}&advid=${adventureId}`
+            } else {
+                location.href = `http://${domainName}/play/party/game?id=${id}&charid=${characterId}&advid=${adventureId}`
+                socket.emit("startGame", [id, Cookies.get("username"), characterId]);
+            }
+
+
+        });
+        socket.on("gameStarting", function (data) {
+            var characterId = $("input:radio[name ='character']:checked").val()
+            var adventureId = $("#adventure").val();
+            Cookies.set("id", id);
+            Cookies.set("charid", characterId);
+            Cookies.set("advid", adventureId);
+            location.href = `http://${domainName}/play/party/game?id=${id}&charid=${characterId}`
+
+        });
+        var appendTimes = 0
+
+        function appendCharacter(name, clss, alignment, level, charid) {
+            var tempid = ID()
+            if (appendTimes == 0) {
+                $("#characterList").append(`
+                        <div class="funkyradio" id="characterList">
+                            <div class="funkyradio-info">
+                                <input type="radio" value="${charid}" name="character" id="${tempid}" checked>
+                                <label for="${tempid}">${name}&nbsp;|&nbsp;${clss}&nbsp;|&nbsp;${alignment}&nbsp;|&nbsp;Lvl: ${level}</label>
+                            </div>
+                        </div>
+                    `);
+            } else {
+                $("#characterList").append(`
+                        <div class="funkyradio" id="characterList">
+                            <div class="funkyradio-info">
+                                <input type="radio" value='${charid}' name="character" id="${tempid}">
+                                <label for="${tempid}">${name}&nbsp;|&nbsp;${clss}&nbsp;|&nbsp;${alignment}&nbsp;|&nbsp;Lvl: ${level}</label>
+                            </div>
+                        </div>
+                    `);
+            }
+            appendTimes++
         }
+        $.get("http://" + domainName + "/users/getCharacters.py?username=" + Cookies.get("username"), function (data) {
+            data = JSON.parse(data);
+            for (i = 0; i < data.length; i++) {
+                appendCharacter(data[i]["name"], data[i]["class"], data[i]['alignment'], data[i]['level'], data[i]["id"]);
+            }
+        });
 
     </script>
 
